@@ -1,0 +1,116 @@
+<?php
+
+
+/**
+ * Implements hook_help().
+ */
+function yhivemap_help($path, $arg) {
+  switch ($path) {
+    case 'admin/help#barcode':
+      $output = '<p>' . t('A module that provides a new FAPI element to handle barcodes.') . '</p>';
+      return $output;
+  }
+  return "";
+}
+
+/**
+ * Implements hook_views_api().
+ */
+function yhivemap_views_api() {
+  return array(
+    'api' => 3,
+  );
+}
+
+// http://precessionmedia.com/blog/how-create-custom-filter-handler-views
+
+// d7 hook_views_handlers is gone. Add your files to your .info file instead.
+// Still location seems to use it.
+
+/*
+ * 'location_views_handler_field_geocode' => array(
+        'parent' => 'location_handler_field_location_distance',
+      ),
+ */
+
+/**
+ * Implements hook_library().
+ *
+ * @deprecated
+ */
+function yhivemap_library() {
+  // Gmap is the dependency. Doesn't look like it uses library.
+
+  $library['yhivemap'] = array(
+    'title' => t('Gmaps Positioning integration'),
+    'version' => '1.0',
+    'js' => array(
+      array('data' => drupal_get_path('module', 'yhivemap') . 'js/yhivemap.js', 'type' => 'file'),
+    ),
+    'dependencies' => array(
+      array('gmap', 'gmap_api_libraries'),
+    ),
+  );
+
+  return $library;
+}
+
+/**
+ * Implements hook_preprocess_views_view().
+ */
+function yhivemap_preprocess_views_view(&$vars) {
+  //$libraries = &drupal_static(__FUNCTION__, array());
+
+  // Hook view id specific functions.
+  if (isset($vars['view']->name)) {
+    $function = '_yhivemap_preprocess_views_view__' . $vars['view']->name;
+    if (function_exists($function)) {
+      $function($vars);
+    }
+  }
+}
+
+
+
+
+// TODO we need to update the location_instance table with the uid
+
+/**
+ *
+ * Implements hook_gmap().
+ *
+ * Add https://developers.google.com/maps/documentation/javascript/examples/place-search
+ *
+ * TODO not doing places search. This is for places in google.
+ */
+function yhivemap_gmap($op, &$map) {
+  switch ($op) {
+    case 'libraries':
+      return array('places');
+      break;
+  }
+
+  return array();
+}
+
+/**
+ * Adds javascript last - yhivemap_preprocess_views_view
+ * @param $vars
+ */
+function _yhivemap_preprocess_views_view__studio_locations(&$vars) {
+  $display_id = $vars['display_id'];
+  $classes = & $vars['classes_array'];
+  $title_classes = & $vars['title_attributes_array']['class'];
+  $content_classes = & $vars['content_attributes_array']['class'];
+
+  switch ($display_id) {
+    case 'page' :
+
+      $file = drupal_get_path('module', 'yhivemap') . '/js/yhivemap.js';
+      $options = array('type' => 'file', 'scope' => 'footer', 'defer' => TRUE, 'weight' => 100);
+      //drupal_add_library('yhivemap', 'yhivemap');
+      drupal_add_js($file, $options);
+      break;
+  }
+}
+

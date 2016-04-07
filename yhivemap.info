@@ -1,0 +1,10 @@
+name = YhiveMap
+description = Find studios near me.
+core = 7.x
+package = Interlated
+
+; TODO use libraries to ensure that yhivemap goes after gmap.js from gmap module.
+;scripts[] = js/yhivemap.js
+files[] = handlers/yhivemap_views_handler_filter_geocode.inc
+files[] = handlers/yhivemap_views_handler_field_geocode.inc
+
