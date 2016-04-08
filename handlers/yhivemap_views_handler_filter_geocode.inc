@@ -37,6 +37,9 @@ class yhivemap_views_handler_filter_geocode extends location_views_handler_filte
     $form['value']['latitude']['#dependency']['edit-options-origin'][] = 'geocoded';
     $form['value']['latitude']['#type'] = 'hidden';
     $form['value']['longitude']['#type'] = 'hidden';
+    $form['value']['user_location_delta']['#type'] = 'hidden';
+    $form['value']['search_distance']['#type'] = 'hidden';
+    $form['value']['search_units']['#type'] = 'hidden';
 
     $form['value']['latitude_geo'] = array(
       '#type' => 'textfield',
